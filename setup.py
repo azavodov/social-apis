@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from src.social_apis import __version__
 
 setup(
     name='social-apis',
-    version='0.2',
+    version=__version__,
     url='https://github.com/azavodov/social-apis',
     license='MIT',
     author='Andrey Zavodov',
