@@ -97,6 +97,9 @@ class Network(object):
     def post(self, url, params=None, json_encoded=False):
         return self.request(url, 'POST', params=params, json_encoded=json_encoded)
 
+    def put(self, url, params=None, json_encoded=False):
+        return self.request(url, 'PUT', params=params, json_encoded=json_encoded)
+
     def delete(self, url, params=None, json_encoded=False):
         return self.request(url, 'DELETE', params=params, json_encoded=json_encoded)
 
