@@ -63,8 +63,6 @@ class Network(object):
             response = func(url, **requests_args)
         except requests.RequestException as e:
             raise SocialAPIError(str(e))
-        except Exception as e:
-            print(e)
 
         self._last_call = {
             'api_call': api_call,
@@ -76,15 +74,13 @@ class Network(object):
             'content': response.text,
         }
 
-        content = ''
-        try:
-            if response.status_code == 204:
-                content = response.content
-            else:
+        if response.status_code == 200:
+            try:
                 content = response.json()
-        except ValueError:
-            if response.content != '':
-                raise SocialAPIError('Response was not valid JSON. Unable to decode.')
+            except ValueError:
+                content = response.content
+        else:
+            raise SocialAPIError(f'Status code: {response.status_code}. Reason: {response.reason}')
 
         return content
 
