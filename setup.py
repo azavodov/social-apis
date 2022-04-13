@@ -11,7 +11,8 @@ setup(
     description='Make requests to different APIs with one library',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf-8').read(),
+    long_description_content_type='text/markdown',
     keywords='social networks API',
     zip_safe=False
 )
