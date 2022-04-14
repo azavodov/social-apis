@@ -36,14 +36,12 @@ TWITTER_HTTP_STATUS_CODE = {
 
 class TwitterError(SocialAPIError):
 
-    def __init__(self, msg, error_code=None, retry_after=None):
+    msg = "Error occurred during Twitter API call."
+
+    def __init__(self, msg, error_code=None):
         self.error_code = error_code
 
         if error_code is not None and error_code in TWITTER_HTTP_STATUS_CODE:
             msg = f'Twitter API returned a {error_code} ({TWITTER_HTTP_STATUS_CODE[error_code][0]}), {msg}'
 
         super(TwitterError, self).__init__(msg)
-
-    @property
-    def msg(self):
-        return self.args[0]
