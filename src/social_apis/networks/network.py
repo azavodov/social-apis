@@ -19,6 +19,8 @@ class Network(object):
         elif 'User-Agent' not in self.client_args['headers']:
             self.client_args['headers'].update(default_headers)
 
+        if 'rate_limit_header' in params:
+            self.rate_limit_header = params['rate_limit_header']
         self.client = requests.Session()
         self.client.auth = Auth(api_url, **params).auth
 
