@@ -3,7 +3,7 @@ from __future__ import generator_stop
 import requests
 
 from social_apis.authentication.auth import Auth
-from social_apis.exceptions.social_api_error import SocialAPIError
+from social_apis.exceptions.social_api_error import *
 
 from social_apis import __version__
 
@@ -21,6 +21,7 @@ class Network(object):
 
         if 'rate_limit_header' in params:
             self.rate_limit_header = params['rate_limit_header']
+
         self.client = requests.Session()
         self.client.auth = Auth(api_url, **params).auth
 
@@ -34,48 +35,43 @@ class Network(object):
 
         self._last_call = None
 
-    def _request(self, url, method='GET', params=None, api_call=None, json_encoded=False):
-        method = method.lower()
-        params = params or {}
-
-        func = getattr(self.client, method)
-        if isinstance(params, dict) and json_encoded is False:
-            params, files = self._transparent_params(params)
-        else:
-            params = params
-            files = list()
-
-        requests_args = {}
-        for k, v in self.client_args.items():
-            if k in ('timeout', 'allow_redirects', 'stream', 'verify'):
-                requests_args[k] = v
-
-        if method == 'get' or method == 'delete':
-            requests_args['params'] = params
-        else:
-            if json_encoded:
-                data_key = 'json'
-            else:
-                data_key = 'data'
-            requests_args.update({
-                data_key: params,
-                'files': files,
-            })
+    @staticmethod
+    def _get_error_message(response):
+        error_message = 'An error occurred processing your request.'
         try:
-            response = func(url, **requests_args)
-        except requests.RequestException as e:
-            raise SocialAPIError(str(e))
+            content = response.json()
+            error_message = content['errors'][0]['message']
+        except TypeError:
+            error_message = content['errors']
+        except ValueError:
+            pass
+        except (KeyError, IndexError):
+            pass
+        return error_message
 
-        self._last_call = {
-            'api_call': api_call,
-            'api_error': None,
-            'cookies': response.cookies,
-            'headers': response.headers,
-            'status_code': response.status_code,
-            'url': response.url,
-            'content': response.text,
-        }
+    def process_response_error_message(self, response):
+        if response.status_code > 304:
+            error_message = self._get_error_message(response)
+            self._last_call['api_error'] = error_message
 
+            exception_type = SocialAPIError
+            if response.status_code == 429 or 'limit' in error_message:
+                exception_type = RateLimitError
+            elif 'forbidden' in error_message:
+                exception_type = ScopeError
+            elif response.status_code == 401 or 'authentication' in error_message:
+                exception_type = AuthError
+
+            retry_after = response.headers.get(self.rate_limit_header) \
+                if self.rate_limit_header else None
+            raise exception_type(
+                error_message,
+                error_code=response.status_code,
+                retry_after=retry_after
+            )
+
+    @staticmethod
+    def parse_response(response):
         if response.status_code == 200:
             try:
                 content = response.json()
@@ -83,26 +79,10 @@ class Network(object):
                 content = response.content
         else:
             raise SocialAPIError(f'Status code: {response.status_code}. Reason: {response.reason}')
-
         return content
 
-    def request(self, url, method='GET', params=None, json_encoded=False):
-        return self._request(url, method=method, params=params, api_call=url, json_encoded=json_encoded)
-
-    def get(self, url, params=None):
-        return self.request(url, params=params)
-
-    def post(self, url, params=None, json_encoded=False):
-        return self.request(url, 'POST', params=params, json_encoded=json_encoded)
-
-    def put(self, url, params=None, json_encoded=False):
-        return self.request(url, 'PUT', params=params, json_encoded=json_encoded)
-
-    def delete(self, url, params=None, json_encoded=False):
-        return self.request(url, 'DELETE', params=params, json_encoded=json_encoded)
-
     @staticmethod
-    def _transparent_params(_params):
+    def transparent_params(_params):
         params = {}
         files = {}
         for k, v in _params.items():
@@ -123,3 +103,66 @@ class Network(object):
             else:
                 continue
         return params, files
+
+    def _request(self, url, method='GET', params=None, api_call=None, json_encoded=False):
+        method = method.lower()
+        params = params or {}
+
+        func = getattr(self.client, method)
+        if isinstance(params, dict) and json_encoded is False:
+            params, files = self.transparent_params(params)
+        else:
+            params = params
+            files = list()
+
+        requests_args = {}
+        for k, v in self.client_args.items():
+            if k in ('timeout', 'allow_redirects', 'stream', 'verify'):
+                requests_args[k] = v
+
+        if method == 'get' or method == 'delete':
+            requests_args['params'] = params
+        else:
+            if json_encoded:
+                data_key = 'json'
+            else:
+                data_key = 'data'
+            requests_args.update({
+                data_key: params,
+                'files': files,
+            })
+
+        try:
+            response = func(url, **requests_args)
+        except requests.RequestException as e:
+            raise MethodError(str(e))
+
+        self._last_call = {
+            'api_call': api_call,
+            'api_error': None,
+            'cookies': response.cookies,
+            'headers': response.headers,
+            'status_code': response.status_code,
+            'url': response.url,
+            'content': response.text,
+        }
+
+        self.process_response_error_message(response)
+        content = self.parse_response(response)
+
+        return content
+
+    def request(self, url, method='GET', params=None, json_encoded=False):
+        return self._request(url, method=method, params=params, api_call=url, json_encoded=json_encoded)
+
+    def get(self, url, params=None):
+        return self.request(url, params=params)
+
+    def post(self, url, params=None, json_encoded=False):
+        return self.request(url, 'POST', params=params, json_encoded=json_encoded)
+
+    def put(self, url, params=None, json_encoded=False):
+        return self.request(url, 'PUT', params=params, json_encoded=json_encoded)
+
+    def delete(self, url, params=None, json_encoded=False):
+        return self.request(url, 'DELETE', params=params, json_encoded=json_encoded)
