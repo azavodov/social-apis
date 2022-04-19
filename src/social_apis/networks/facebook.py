@@ -23,10 +23,16 @@ class Facebook(Network):
     def get_group_albums(self, group_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/group/albums"""
         return self.get(f"{self.api_url}/{group_id}/albums", params=params)
+    get_group_albums.iter_key = 'data'
+    get_group_albums.iter_field = 'after'
+    get_group_albums.iter_next = 'paging.cursors.after'
 
     def get_group_members(self, group_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/group/members"""
         return self.get(f"{self.api_url}/{group_id}/members", params=params)
+    get_group_members.iter_key = 'data'
+    get_group_members.iter_field = 'after'
+    get_group_members.iter_next = 'paging.cursors.after'
 
     def post_group_album(self, group_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/group/albums#publish"""
@@ -39,6 +45,9 @@ class Facebook(Network):
     def get_group_videos(self, group_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/group/videos"""
         return self.get(f"{self.api_url}/{group_id}/videos", params=params)
+    get_group_videos.iter_key = 'data'
+    get_group_videos.iter_field = 'after'
+    get_group_videos.iter_next = 'paging.cursors.after'
 
     # Pages
     def get_page(self, page_id, **params):
@@ -56,6 +65,9 @@ class Facebook(Network):
     def get_page_personas(self, page_id, **params):
         """https://developers.facebook.com/docs/graph-api/reference/page/personas/#Reading"""
         return self.get(f"{self.api_url}/{page_id}/personas", params=params)
+    get_page_personas.iter_key = 'data'
+    get_page_personas.iter_field = 'after'
+    get_page_personas.iter_next = 'paging.cursors.after'
 
     def post_page_personas(self, page_id, **params):
         """https://developers.facebook.com/docs/graph-api/reference/page/personas/#Creating"""
@@ -64,14 +76,23 @@ class Facebook(Network):
     def get_page_conversations(self, page_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/page/conversations"""
         return self.get(f"{self.api_url}/{page_id}/conversations", params=params)
+    get_page_conversations.iter_key = 'data'
+    get_page_conversations.iter_field = 'after'
+    get_page_conversations.iter_next = 'paging.cursors.after'
 
     def get_page_groups(self, page_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/page/groups"""
         return self.get(f"{self.api_url}/{page_id}/groups", params=params)
+    get_page_groups.iter_key = 'data'
+    get_page_groups.iter_field = 'after'
+    get_page_groups.iter_next = 'paging.cursors.after'
 
     def get_page_insights(self, page_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/page/insights"""
         return self.get(f"{self.api_url}/{page_id}/insights", params=params)
+    get_page_insights.iter_key = 'data'
+    get_page_insights.iter_field = 'after'
+    get_page_insights.iter_next = 'paging.cursors.after'
 
     def get_page_likes(self, page_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/page/likes"""

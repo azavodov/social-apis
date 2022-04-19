@@ -157,6 +157,10 @@ class Vkontakte(Network):
     def ads_get_ads(self, **params):
         """Docs: https://dev.vk.com/method/ads.getAds"""
         return self.post(f'ads.getAds', params=params)
+    ads_get_ads.iter_key = 'response.items'
+    ads_get_ads.iter_field = 'offset'
+    ads_get_ads.iter_mode = 'offset'
+    ads_get_ads.iter_next = 'response.items'
 
     def ads_get_ads_layout(self, **params):
         """Docs: https://dev.vk.com/method/ads.getAdsLayout"""
@@ -177,14 +181,26 @@ class Vkontakte(Network):
     def ads_get_campaigns(self, **params):
         """Docs: https://dev.vk.com/method/ads.getCampaigns"""
         return self.post(f'ads.getCampaigns', params=params)
+    ads_get_campaigns.iter_key = 'response.items'
+    ads_get_campaigns.iter_field = 'offset'
+    ads_get_campaigns.iter_mode = 'offset'
+    ads_get_campaigns.iter_next = 'response.items'
 
     def ads_get_categories(self, **params):
         """Docs: https://dev.vk.com/method/ads.getCategories"""
         return self.post(f'ads.getCategories', params=params)
+    ads_get_categories.iter_key = 'response.items'
+    ads_get_categories.iter_field = 'offset'
+    ads_get_categories.iter_mode = 'offset'
+    ads_get_categories.iter_next = 'response.items'
 
     def ads_get_clients(self, **params):
         """Docs: https://dev.vk.com/method/ads.getClients"""
         return self.post(f'ads.getClients', params=params)
+    ads_get_clients.iter_key = 'response.items'
+    ads_get_clients.iter_field = 'offset'
+    ads_get_clients.iter_mode = 'offset'
+    ads_get_clients.iter_next = 'response.items'
 
     def ads_get_demographics(self, **params):
         """Docs: https://dev.vk.com/method/ads.getDemographics"""
@@ -194,7 +210,7 @@ class Vkontakte(Network):
         """Docs: https://dev.vk.com/method/ads.getFloodStats"""
         return self.post(f'ads.getFloodStats', params=params)
 
-    def ads_(self, **params):
+    def ads_get_lookalike_requests(self, **params):
         """Docs: https://dev.vk.com/method/ads.getLookalikeRequests"""
         return self.post(f'ads.get_lookalike_requests', params=params)
 
@@ -294,50 +310,98 @@ class Vkontakte(Network):
     def database_get_chairs(self, **params):
         """Docs: https://dev.vk.com/method/database.getChairs"""
         return self.post(f'database.getChairs', params=params)
+    database_get_chairs.iter_key = 'response.items'
+    database_get_chairs.iter_field = 'offset'
+    database_get_chairs.iter_mode = 'offset'
+    database_get_chairs.iter_next = 'response.items'
 
     def database_get_cities(self, **params):
         """Docs: https://dev.vk.com/method/database.getCities"""
         return self.post(f'database.getCities', params=params)
+    database_get_cities.iter_key = 'response.items'
+    database_get_cities.iter_field = 'offset'
+    database_get_cities.iter_mode = 'offset'
+    database_get_cities.iter_next = 'response.items'
 
     def database_get_cities_by_id(self, **params):
         """Docs: https://dev.vk.com/method/database.getCitiesById"""
         return self.post(f'database.getCitiesById', params=params)
+    database_get_cities_by_id.iter_key = 'response.items'
+    database_get_cities_by_id.iter_field = 'offset'
+    database_get_cities_by_id.iter_mode = 'offset'
+    database_get_cities_by_id.iter_next = 'response.items'
 
     def database_get_countries(self, **params):
         """Docs: https://dev.vk.com/method/database.getCountries"""
         return self.post(f'database.getCountries', params=params)
+    database_get_countries.iter_key = 'response.items'
+    database_get_countries.iter_field = 'offset'
+    database_get_countries.iter_mode = 'offset'
+    database_get_countries.iter_next = 'response.items'
 
     def database_get_countries_by_id(self, **params):
         """Docs: https://dev.vk.com/method/database.getCountriesById"""
         return self.post(f'database.getCountriesById', params=params)
+    database_get_countries_by_id.iter_key = 'response.items'
+    database_get_countries_by_id.iter_field = 'offset'
+    database_get_countries_by_id.iter_mode = 'offset'
+    database_get_countries_by_id.iter_next = 'response.items'
 
     def database_get_faculties(self, **params):
         """Docs: https://dev.vk.com/method/database.getFaculties"""
         return self.post(f'database.getFaculties', params=params)
+    database_get_faculties.iter_key = 'response.items'
+    database_get_faculties.iter_field = 'offset'
+    database_get_faculties.iter_mode = 'offset'
+    database_get_faculties.iter_next = 'response.items'
 
     def database_get_metro_stations(self, **params):
         """Docs: https://dev.vk.com/method/database.getMetroStations"""
         return self.post(f'database.getMetroStations', params=params)
+    database_get_metro_stations.iter_key = 'response.items'
+    database_get_metro_stations.iter_field = 'offset'
+    database_get_metro_stations.iter_mode = 'offset'
+    database_get_metro_stations.iter_next = 'response.items'
 
     def database_get_metro_stations_by_id(self, **params):
         """Docs: https://dev.vk.com/method/database.getMetroStationsById"""
         return self.post(f'database.getMetroStationsById', params=params)
+    database_get_metro_stations_by_id.iter_key = 'response.items'
+    database_get_metro_stations_by_id.iter_field = 'offset'
+    database_get_metro_stations_by_id.iter_mode = 'offset'
+    database_get_metro_stations_by_id.iter_next = 'response.items'
 
     def database_get_regions(self, **params):
         """Docs: https://dev.vk.com/method/database.getRegions"""
         return self.post(f'database.getRegions', params=params)
+    database_get_regions.iter_key = 'response.items'
+    database_get_regions.iter_field = 'offset'
+    database_get_regions.iter_mode = 'offset'
+    database_get_regions.iter_next = 'response.items'
 
     def database_get_school_classes(self, **params):
         """Docs: https://dev.vk.com/method/database.getSchoolClasses"""
         return self.post(f'database.getSchoolClasses', params=params)
+    database_get_school_classes.iter_key = 'response.items'
+    database_get_school_classes.iter_field = 'offset'
+    database_get_school_classes.iter_mode = 'offset'
+    database_get_school_classes.iter_next = 'response.items'
 
     def database_get_schools(self, **params):
         """Docs: https://dev.vk.com/method/database.getSchools"""
         return self.post(f'database.getSchools', params=params)
+    database_get_schools.iter_key = 'response.items'
+    database_get_schools.iter_field = 'offset'
+    database_get_schools.iter_mode = 'offset'
+    database_get_schools.iter_next = 'response.items'
 
     def database_get_universities(self, **params):
         """Docs: https://dev.vk.com/method/database.getUniversities"""
         return self.post(f'database.getUniversities', params=params)
+    database_get_universities.iter_key = 'response.items'
+    database_get_universities.iter_field = 'offset'
+    database_get_universities.iter_mode = 'offset'
+    database_get_universities.iter_next = 'response.items'
 
     # Docs
     def docs_add(self, **params):
@@ -656,10 +720,6 @@ class Vkontakte(Network):
         return self.post(f'utils.resolveScreenName', params=params)
 
     # Wall
-    def wall_(self, **params):
-        """Docs: https://dev.vk.com/method/wall.addLike"""
-        return self.post(f'wall.', params=params)
-
     def wall_check_copyright_link(self, **params):
         """Docs: https://dev.vk.com/method/wall.checkCopyrightLink"""
         return self.post(f'wall.checkCopyrightLink', params=params)
@@ -723,6 +783,10 @@ class Vkontakte(Network):
     def wall_get_reposts(self, **params):
         """Docs: https://dev.vk.com/method/wall.getReposts"""
         return self.post(f'wall.getReposts', params=params)
+    wall_get_reposts.iter_key = 'response.items'
+    wall_get_reposts.iter_field = 'offset'
+    wall_get_reposts.iter_mode = 'offset'
+    wall_get_reposts.iter_next = 'response.items'
 
     def wall_open_comments(self, **params):
         """Docs: https://dev.vk.com/method/wall.openComments"""
@@ -763,6 +827,10 @@ class Vkontakte(Network):
     def wall_search(self, **params):
         """Docs: https://dev.vk.com/method/wall.search"""
         return self.post(f'wall.search', params=params)
+    wall_search.iter_key = 'response.items'
+    wall_search.iter_field = 'offset'
+    wall_search.iter_mode = 'offset'
+    wall_search.iter_next = 'response.items'
 
     def wall_unpin(self, **params):
         """Docs: https://dev.vk.com/method/wall.unpin"""

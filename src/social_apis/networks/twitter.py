@@ -8,6 +8,7 @@ class Twitter(Network):
     api_url = 'https://api.twitter.com'
     api_version = '1.1'
     url = f"{api_url}/{api_version}"
+    rate_limit_header = 'X-Rate-Limit-Reset'
 
     def __init__(self, **params):
         super(Twitter, self).__init__(self.api_url, **params)
@@ -20,22 +21,18 @@ class Twitter(Network):
     def get_mentions_timeline(self, **params):
         """Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-mentions_timeline"""
         return self.get('statuses/mentions_timeline', params=params)
-    get_mentions_timeline.iter_mode = 'id'
 
     def get_user_timeline(self, **params):
         """Docs: https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline"""
         return self.get('statuses/user_timeline', params=params)
-    get_user_timeline.iter_mode = 'id'
 
     def get_home_timeline(self, **params):
         """Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-home_timeline"""
         return self.get('statuses/home_timeline', params=params)
-    get_home_timeline.iter_mode = 'id'
 
     def retweeted_of_me(self, **params):
         """Docs: https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweets_of_me"""
         return self.get('statuses/retweets_of_me', params=params)
-    retweeted_of_me.iter_mode = 'id'
 
     # Tweets
     def get_retweets(self, **params):
@@ -80,22 +77,19 @@ class Twitter(Network):
     def get_retweeters_ids(self, **params):
         """Docs: https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweeters-ids"""
         return self.get('statuses/retweeters/ids', params=params)
-    get_retweeters_ids.iter_mode = 'cursor'
     get_retweeters_ids.iter_key = 'ids'
+    get_retweeters_ids.iter_field = 'cursor'
+    get_retweeters_ids.iter_next = 'next_cursor_str'
 
     # Search
     def search(self, **params):
         """Docs: https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"""
         return self.get('search/tweets', params=params)
-    search.iter_mode = 'id'
-    search.iter_key = 'statuses'
-    search.iter_metadata = 'search_metadata'
 
     # Direct Messages
     def get_direct_messages(self, **params):
         """Docs: https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events"""
         return self.get('direct_messages/events/list', params=params)
-    get_direct_messages.iter_mode = 'id'
 
     def get_direct_message(self, **params):
         """Docs: https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-event"""
@@ -117,14 +111,16 @@ class Twitter(Network):
     def get_friends_ids(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids"""
         return self.get('friends/ids', params=params)
-    get_friends_ids.iter_mode = 'cursor'
     get_friends_ids.iter_key = 'ids'
+    get_friends_ids.iter_field = 'cursor'
+    get_friends_ids.iter_next = 'next_cursor_str'
 
     def get_followers_ids(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids"""
         return self.get('followers/ids', params=params)
-    get_followers_ids.iter_mode = 'cursor'
     get_followers_ids.iter_key = 'ids'
+    get_followers_ids.iter_field = 'cursor'
+    get_followers_ids.iter_next = 'next_cursor_str'
 
     def lookup_friendships(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-lookup"""
@@ -133,14 +129,16 @@ class Twitter(Network):
     def get_incoming_friendship_ids(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming"""
         return self.get('friendships/incoming', params=params)
-    get_incoming_friendship_ids.iter_mode = 'cursor'
     get_incoming_friendship_ids.iter_key = 'ids'
+    get_incoming_friendship_ids.iter_field = 'cursor'
+    get_incoming_friendship_ids.iter_next = 'next_cursor_str'
 
     def get_outgoing_friendship_ids(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-outgoing"""
         return self.get('friendships/outgoing', params=params)
-    get_outgoing_friendship_ids.iter_mode = 'cursor'
     get_outgoing_friendship_ids.iter_key = 'ids'
+    get_outgoing_friendship_ids.iter_field = 'cursor'
+    get_outgoing_friendship_ids.iter_next = 'next_cursor_str'
 
     def create_friendship(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-create"""
@@ -161,14 +159,16 @@ class Twitter(Network):
     def get_friends_list(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-list"""
         return self.get('friends/list', params=params)
-    get_friends_list.iter_mode = 'cursor'
     get_friends_list.iter_key = 'users'
+    get_friends_list.iter_field = 'cursor'
+    get_friends_list.iter_next = 'next_cursor_str'
 
     def get_followers_list(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-list"""
         return self.get('followers/list', params=params)
-    get_followers_list.iter_mode = 'cursor'
     get_followers_list.iter_key = 'users'
+    get_followers_list.iter_field = 'cursor'
+    get_followers_list.iter_next = 'next_cursor_str'
 
     # Users
     def get_account_settings(self, **params):
@@ -202,14 +202,16 @@ class Twitter(Network):
     def list_blocks(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/get-blocks-list"""
         return self.get('blocks/list', params=params)
-    list_blocks.iter_mode = 'cursor'
     list_blocks.iter_key = 'users'
+    list_blocks.iter_field = 'cursor'
+    list_blocks.iter_next = 'next_cursor_str'
 
     def list_block_ids(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/get-blocks-ids"""
         return self.get('blocks/ids', params=params)
-    list_block_ids.iter_mode = 'cursor'
     list_block_ids.iter_key = 'ids'
+    list_block_ids.iter_field = 'cursor'
+    list_block_ids.iter_next = 'next_cursor_str'
 
     def create_block(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/post-blocks-create"""
@@ -254,14 +256,16 @@ class Twitter(Network):
     def list_mutes(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/get-mutes-users-list"""
         return self.get('mutes/users/list', params=params)
-    list_mutes.iter_mode = 'cursor'
     list_mutes.iter_key = 'users'
+    list_mutes.iter_field = 'cursor'
+    list_mutes.iter_next = 'next_cursor_str'
 
     def list_mute_ids(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/get-mutes-users-ids"""
         return self.get('mutes/users/ids', params=params)
-    list_mute_ids.iter_mode = 'cursor'
     list_mute_ids.iter_key = 'ids'
+    list_mute_ids.iter_field = 'cursor'
+    list_mute_ids.iter_next = 'next_cursor_str'
 
     def create_mute(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference/post-mutes-users-create"""
@@ -288,7 +292,6 @@ class Twitter(Network):
     def get_favorites(self, **params):
         """Docs: https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-favorites-list"""
         return self.get('favorites/list', params=params)
-    get_favorites.iter_mode = 'id'
 
     def destroy_favorite(self, **params):
         """Docs: https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-favorites-destroy"""
@@ -306,7 +309,6 @@ class Twitter(Network):
     def get_list_statuses(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-statuses"""
         return self.get('lists/statuses', params=params)
-    get_list_statuses.iter_mode = 'id'
 
     def delete_list_member(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/post-lists-members-destroy"""
@@ -315,14 +317,16 @@ class Twitter(Network):
     def get_list_memberships(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-memberships"""
         return self.get('lists/memberships', params=params)
-    get_list_memberships.iter_mode = 'cursor'
     get_list_memberships.iter_key = 'lists'
+    get_list_memberships.iter_field = 'cursor'
+    get_list_memberships.iter_next = 'next_cursor_str'
 
     def get_list_subscribers(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-subscribers"""
         return self.get('lists/subscribers', params=params)
-    get_list_subscribers.iter_mode = 'cursor'
     get_list_subscribers.iter_key = 'users'
+    get_list_subscribers.iter_field = 'cursor'
+    get_list_subscribers.iter_next = 'next_cursor_str'
 
     def subscribe_to_list(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/post-lists-subscribers-create"""
@@ -347,8 +351,9 @@ class Twitter(Network):
     def get_list_members(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-members"""
         return self.get('lists/members', params=params)
-    get_list_members.iter_mode = 'cursor'
     get_list_members.iter_key = 'users'
+    get_list_members.iter_field = 'cursor'
+    get_list_members.iter_next = 'next_cursor_str'
 
     def add_list_member(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/post-lists-members-create"""
@@ -373,8 +378,9 @@ class Twitter(Network):
     def get_list_subscriptions(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-subscriptions"""
         return self.get('lists/subscriptions', params=params)
-    get_list_subscriptions.iter_mode = 'cursor'
     get_list_subscriptions.iter_key = 'lists'
+    get_list_subscriptions.iter_field = 'cursor'
+    get_list_subscriptions.iter_next = 'next_cursor_str'
 
     def delete_list_members(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/post-lists-members-destroy_all"""
@@ -383,8 +389,9 @@ class Twitter(Network):
     def show_owned_lists(self, **params):
         """Docs: https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-ownerships"""
         return self.get('lists/ownerships', params=params)
-    show_owned_lists.iter_mode = 'cursor'
     show_owned_lists.iter_key = 'lists'
+    show_owned_lists.iter_field = 'cursor'
+    show_owned_lists.iter_next = 'next_cursor_str'
 
     # Saved Searches
     def get_saved_searches(self, **params):
