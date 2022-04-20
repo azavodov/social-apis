@@ -1,18 +1,14 @@
-import os
 import unittest
 
 from social_apis.networks.twitter import Twitter
+from config import tw_app_key, tw_app_secret, tw_oauth_token_secret, tw_oauth_token
 
 
 class TestTwitter(unittest.TestCase):
 
     def setUp(self):
-        app_key = os.environ.get("TWITTER_APP_KEY")
-        app_secret = os.environ.get("TWITTER_APP_SECRET")
-        oauth_token = os.environ.get("TWITTER_TOKEN")
-        oauth_token_secret = os.environ.get("TWITTER_TOKEN_SECRET")
-        self.api = Twitter(app_key=app_key, app_secret=app_secret,
-                           oauth_token=oauth_token, oauth_token_secret=oauth_token_secret)
+        self.api = Twitter(app_key=tw_app_key, app_secret=tw_app_secret,
+                           oauth_token=tw_oauth_token, oauth_token_secret=tw_oauth_token_secret)
 
     def test_get_mentions_timeline(self):
         self.api.get_mentions_timeline()

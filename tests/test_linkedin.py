@@ -1,14 +1,13 @@
-import os
 import unittest
 
 from social_apis.networks.linkedin import Linkedin
+from config import ld_access_token
 
 
 class TestLinkedin(unittest.TestCase):
 
     def setUp(self):
-        access_token = os.environ.get("LINKEDIN_ACCESS_TOKEN")
-        self.api = Linkedin(access_token=access_token)
+        self.api = Linkedin(access_token=ld_access_token)
 
     def testPlaces(self):
         places = self.api.regions(count=10)['elements']

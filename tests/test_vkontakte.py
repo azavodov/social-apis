@@ -1,14 +1,13 @@
-import os
 import unittest
 
 from social_apis.networks.vkontakte import Vkontakte
+from config import vk_access_token
 
 
 class TestVkontakte(unittest.TestCase):
 
     def setUp(self):
-        access_token = os.environ.get("VKONTAKTE_ACCESS_TOKEN")
-        self.api = Vkontakte(access_token=access_token)
+        self.api = Vkontakte(access_token=vk_access_token)
 
     def test_get_account_counters(self):
         self.api.account_get_counters(filter="friends_recommendations")
