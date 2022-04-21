@@ -6,9 +6,10 @@ class Twitter2(Network):
     api_url = 'https://api.twitter.com'
     api_version = '2'
     url = f"{api_url}/{api_version}"
+    quota_headers = ['x-rate-limit-reset', 'x-rate-limit-remaining', 'x-rate-limit-limit']
 
     def __init__(self, **params):
-        super(Twitter2, self).__init__(self.api_url, **params)
+        super(Twitter2, self).__init__(self.api_url, self.quota_headers, **params)
 
     # Tweets
     def get_tweet(self, id, **params):

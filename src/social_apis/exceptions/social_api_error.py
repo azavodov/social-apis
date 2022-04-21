@@ -3,9 +3,8 @@ class SocialAPIError(Exception):
 
     msg = "An error occurred during the request"
 
-    def __init__(self, msg=None, error_code=None, retry_after=None):
+    def __init__(self, msg=None, error_code=None):
         self.error_code = error_code
-        self.retry_after = retry_after
         if msg is not None:
             self.msg = msg
         super(SocialAPIError, self).__init__(self.msg)
@@ -28,9 +27,9 @@ class RateLimitError(SocialAPIError):
     msg = "Rate Limit Error occurred during the request. " \
           "Looks like you've exceeded your requests limit."
 
-    def __init__(self, msg, error_code, retry_after=None):
-        if isinstance(retry_after, int):
-            msg = f'{msg} (Retry after {retry_after} seconds)'
+    def __init__(self, msg, error_code, quota=None):
+        if quota is not None:
+            msg = f'{msg} (API quota information – {quota})'
         SocialAPIError.__init__(self, msg, error_code=error_code)
 
 

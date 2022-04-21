@@ -7,8 +7,10 @@ class Facebook(Network):
     api_version = 'v13.0'
     url = f"{api_url}/{api_version}"
 
+    quota_headers = ['x-app-usage']
+
     def __init__(self, **params):
-        super(Facebook, self).__init__(self.api_url, **params)
+        super(Facebook, self).__init__(self.api_url, self.quota_headers, **params)
 
     # Albums
     def get_album(self, album_id, **params):

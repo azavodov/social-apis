@@ -10,7 +10,7 @@ from social_apis import __version__
 
 class Network(object):
 
-    def __init__(self, api_url, client_args=None, **params):
+    def __init__(self, api_url, quota_headers=None, client_args=None, **params):
 
         self.client_args = client_args or {}
         default_headers = {'User-Agent': 'SocialAPI v' + __version__}
@@ -19,8 +19,7 @@ class Network(object):
         elif 'User-Agent' not in self.client_args['headers']:
             self.client_args['headers'].update(default_headers)
 
-        if 'rate_limit_header' in params:
-            self.rate_limit_header = params['rate_limit_header']
+        self.quota_headers = quota_headers
 
         self.client = requests.Session()
         self.client.auth = Auth(api_url, **params).auth
@@ -50,25 +49,19 @@ class Network(object):
         return error_message
 
     def process_response_error_message(self, response):
-        if response.status_code > 304:
+        status_code = response.status_code
+        if status_code > 304:
             error_message = self._get_error_message(response)
             self._last_call['api_error'] = error_message
 
-            exception_type = SocialAPIError
-            if response.status_code == 429 or 'limit' in error_message:
-                exception_type = RateLimitError
+            if status_code == 429 or 'limit' in error_message:
+                raise RateLimitError(error_message, error_code=status_code, quota=self._last_call['quota'])
             elif 'forbidden' in error_message:
-                exception_type = ScopeError
-            elif response.status_code == 401 or 'authentication' in error_message:
-                exception_type = AuthError
+                raise ScopeError(error_message, error_code=status_code)
+            elif status_code == 401 or 'authentication' in error_message:
+                raise AuthError(error_message, error_code=status_code)
 
-            retry_after = response.headers.get(self.rate_limit_header) \
-                if self.rate_limit_header else None
-            raise exception_type(
-                error_message,
-                error_code=response.status_code,
-                retry_after=retry_after
-            )
+            raise SocialAPIError(error_message, error_code=status_code)
 
     @staticmethod
     def parse_response(response):
@@ -80,6 +73,26 @@ class Network(object):
         else:
             raise SocialAPIError(f'Status code: {response.status_code}. Reason: {response.reason}')
         return content
+
+    def parse_quota_headers(self, headers):
+        quota = None
+        if self.quota_headers is not None:
+            try:
+                if isinstance(self.quota_headers, list):
+                    quota = '; '.join([headers.get(head) for head in self.quota_headers])
+                elif isinstance(self.quota_headers, str):
+                    quota = headers.get(self.quota_headers)
+            except (KeyError, TypeError):
+                pass
+        return quota
+
+    def get_quota(self):
+        if self.quota_headers is None:
+            return "<< There is no information about quotas for the current network. >>"
+        if self._last_call is not None and 'quota' in self._last_call:
+            return self._last_call['quota']
+        else:
+            return "<< Information about quotas will be after any request to the API. >>"
 
     @staticmethod
     def transparent_params(_params):
@@ -142,6 +155,7 @@ class Network(object):
             'api_error': None,
             'cookies': response.cookies,
             'headers': response.headers,
+            'quota': self.parse_quota_headers(response.headers),
             'status_code': response.status_code,
             'url': response.url,
             'content': response.text,

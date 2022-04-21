@@ -8,10 +8,10 @@ class Twitter(Network):
     api_url = 'https://api.twitter.com'
     api_version = '1.1'
     url = f"{api_url}/{api_version}"
-    rate_limit_header = 'X-Rate-Limit-Reset'
+    quota_headers = ['x-rate-limit-reset', 'x-rate-limit-remaining', 'x-rate-limit-limit']
 
     def __init__(self, **params):
-        super(Twitter, self).__init__(self.api_url, **params)
+        super(Twitter, self).__init__(self.api_url, self.quota_headers, **params)
 
     def request(self, endpoint, method='GET', params=None, json_encoded=False):
         url = endpoint if endpoint.startswith('https://') else f'{self.url}/{endpoint}.json'
