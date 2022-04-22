@@ -35,28 +35,31 @@ class Network(object):
         self._last_call = None
 
     @staticmethod
-    def _get_error_message(response):
-        error_message = 'An error occurred processing your request.'
+    def get_error_message(response):
         try:
+            error_message = ''
             content = response.json()
-            error_message = content['errors'][0]['message']
-        except TypeError:
-            error_message = content['errors']
+            for key in ['error', 'errors', 'message', 'description']:
+                if key in content:
+                    error_message += f'{key}: {content[key]}; '
+            if not len(error_message):
+                error_message = response.text
+            return error_message
         except ValueError:
             pass
         except (KeyError, IndexError):
             pass
-        return error_message
+        return 'An error occurred processing your request.'
 
     def process_response_error_message(self, response):
         status_code = response.status_code
         if status_code > 304:
-            error_message = self._get_error_message(response)
+            error_message = self.get_error_message(response)
             self._last_call['api_error'] = error_message
 
             if status_code == 429 or 'limit' in error_message:
                 raise RateLimitError(error_message, error_code=status_code, quota=self._last_call['quota'])
-            elif 'forbidden' in error_message:
+            elif status_code == 403 or 'forbidden' in error_message or response.reason == 'forbidden':
                 raise ScopeError(error_message, error_code=status_code)
             elif status_code == 401 or 'authentication' in error_message:
                 raise AuthError(error_message, error_code=status_code)
