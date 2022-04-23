@@ -35,6 +35,40 @@ class Network(object):
         self._last_call = None
 
     @staticmethod
+    def transparent_params(_params):
+        params = {}
+        files = {}
+        for k, v in _params.items():
+            if hasattr(v, 'read') and callable(v.read):
+                files[k] = v
+            elif isinstance(v, bool):
+                if v:
+                    params[k] = 'true'
+                else:
+                    params[k] = 'false'
+            elif isinstance(v, (str, bytes)) or isinstance(v, (int, float)):
+                params[k] = v
+            elif isinstance(v, list):
+                try:
+                    params[k] = ','.join(v)
+                except TypeError:
+                    params[k] = ','.join(map(str, v))
+            else:
+                continue
+        return params, files
+
+    @staticmethod
+    def parse_response(response):
+        if response.status_code == 200:
+            try:
+                content = response.json()
+            except ValueError:
+                content = response.content
+        else:
+            raise SocialAPIError(f'Status code: {response.status_code}. Reason: {response.reason}')
+        return content
+
+    @staticmethod
     def get_error_message(response):
         try:
             error_message = ''
@@ -66,17 +100,6 @@ class Network(object):
 
             raise SocialAPIError(error_message, error_code=status_code)
 
-    @staticmethod
-    def parse_response(response):
-        if response.status_code == 200:
-            try:
-                content = response.json()
-            except ValueError:
-                content = response.content
-        else:
-            raise SocialAPIError(f'Status code: {response.status_code}. Reason: {response.reason}')
-        return content
-
     def parse_quota_headers(self, headers):
         quota = None
         if self.quota_headers is not None:
@@ -96,29 +119,6 @@ class Network(object):
             return self._last_call['quota']
         else:
             return "<< Information about quotas will be after any request to the API. >>"
-
-    @staticmethod
-    def transparent_params(_params):
-        params = {}
-        files = {}
-        for k, v in _params.items():
-            if hasattr(v, 'read') and callable(v.read):
-                files[k] = v
-            elif isinstance(v, bool):
-                if v:
-                    params[k] = 'true'
-                else:
-                    params[k] = 'false'
-            elif isinstance(v, (str, bytes)) or isinstance(v, (int, float)):
-                params[k] = v
-            elif isinstance(v, list):
-                try:
-                    params[k] = ','.join(v)
-                except TypeError:
-                    params[k] = ','.join(map(str, v))
-            else:
-                continue
-        return params, files
 
     def _request(self, url, method='GET', params=None, api_call=None, json_encoded=False):
         method = method.lower()
