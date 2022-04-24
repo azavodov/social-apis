@@ -29,13 +29,6 @@ class Facebook(Network):
     get_group_albums.iter_field = 'after'
     get_group_albums.iter_next = 'paging.cursors.after'
 
-    def get_group_members(self, group_id, **params):
-        """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/group/members"""
-        return self.get(f"{self.api_url}/{group_id}/members", params=params)
-    get_group_members.iter_key = 'data'
-    get_group_members.iter_field = 'after'
-    get_group_members.iter_next = 'paging.cursors.after'
-
     def post_group_album(self, group_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/group/albums#publish"""
         return self.post(f"{self.api_url}/{group_id}/albums", params=params)
@@ -108,6 +101,10 @@ class Facebook(Network):
     def get_post_attachments(self, post_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/post/attachments/"""
         return self.get(f"{self.url}/{post_id}/attachments", params)
+
+    def get_post_comments(self, post_id, **params):
+        """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/object/comments"""
+        return self.get(f"{self.url}/{post_id}/comments", params)
 
     def post_post_comment(self, post_id, **params):
         """Docs: https://developers.facebook.com/docs/graph-api/reference/v13.0/object/comments#publish"""
