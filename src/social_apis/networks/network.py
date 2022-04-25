@@ -1,6 +1,7 @@
 from __future__ import generator_stop
 
 import requests
+from requests import Response
 
 from social_apis.authentication.auth import Auth
 from social_apis.exceptions.social_api_error import *
@@ -35,7 +36,7 @@ class Network(object):
         self._last_call = None
 
     @staticmethod
-    def transparent_params(_params):
+    def transparent_params(_params: dict):
         params = {}
         files = {}
         for k, v in _params.items():
@@ -58,7 +59,7 @@ class Network(object):
         return params, files
 
     @staticmethod
-    def parse_response(response):
+    def parse_response(response: Response):
         if response.status_code == 200:
             try:
                 content = response.json()
@@ -69,7 +70,7 @@ class Network(object):
         return content
 
     @staticmethod
-    def get_error_message(response):
+    def get_error_message(response: Response):
         try:
             error_message = ''
             content = response.json()
@@ -85,7 +86,7 @@ class Network(object):
             pass
         return 'An error occurred processing your request.'
 
-    def process_response_error_message(self, response):
+    def process_response_error_message(self, response: Response):
         status_code = response.status_code
         if status_code > 304:
             error_message = self.get_error_message(response)
@@ -100,7 +101,7 @@ class Network(object):
 
             raise SocialAPIError(error_message, error_code=status_code)
 
-    def parse_quota_headers(self, headers):
+    def parse_quota_headers(self, headers: dict):
         quota = None
         if self.quota_headers is not None:
             try:
