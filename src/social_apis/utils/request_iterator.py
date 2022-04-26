@@ -7,7 +7,7 @@ def iterator(api_method, return_pages=False, **params):
     r"""Returns a generator for results of specific supported method.
     Usage::
       >>> from social_apis.networks.facebook import Facebook
-      >>> facebook = Facebook(access_token=ACCESS_TOKEN)
+      >>> facebook = Facebook(access_token="<<access_token>>")
 
       >>> response = iterator(facebook.search, q='python')
       >>> for item in response:
@@ -18,7 +18,7 @@ def iterator(api_method, return_pages=False, **params):
         raise TypeError('iterator() takes a Network function as its first argument.')
 
     if not hasattr(api_method, 'iter_key') or not hasattr(api_method, 'iter_field'):
-        raise IterationError(f'Unable to create generator for method "{api_method.__name__}"')
+        raise IteratorError(f'Unable to create generator for method "{api_method.__name__}"')
 
     iter_key = api_method.iter_key
     iter_field = api_method.iter_field
@@ -47,9 +47,9 @@ def iterator(api_method, return_pages=False, **params):
             elif iter_mode == 'offset':
                 params[iter_field] = int(params[iter_field]) + 10 if iter_field in params else 0
         except (TypeError, ValueError):
-            raise IterationError('Unable to generate next page of search results, `page` is not a number.')
+            raise IteratorError('Unable to generate next page of search results, `page` is not a number.')
         except (KeyError, AttributeError):
-            raise IterationError('Unable to generate next page of search results, content has unexpected structure.')
+            raise IteratorError('Unable to generate next page of search results, content has unexpected structure.')
 
 
 def get_field(content, field, raise_error=False):

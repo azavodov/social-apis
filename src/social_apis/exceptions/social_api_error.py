@@ -19,7 +19,7 @@ class MethodError(SocialAPIError):
           "Method does not exist, or arguments are passed incorrectly"
 
 
-class IterationError(SocialAPIError):
+class IteratorError(SocialAPIError):
     msg = "An error occurred during the iteration by response"
 
 
