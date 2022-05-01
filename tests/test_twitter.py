@@ -35,3 +35,7 @@ class TestTwitter(unittest.TestCase):
     def test_get_application_rate_limit_status(self):
         self.api.get_application_rate_limit_status()
 
+    def test_quota_parsing(self):
+        self.api.retweeted_of_me()
+        self.assertIsNotNone(self.api.get_quota())
+
